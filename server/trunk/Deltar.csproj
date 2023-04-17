@@ -40,11 +40,17 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration.Install" />
+    <Compile Remove="HabboHotel\Items\**" />
+    <Compile Remove="HabboHotel\Moderation\**" />
+    <EmbeddedResource Remove="HabboHotel\Items\**" />
+    <EmbeddedResource Remove="HabboHotel\Moderation\**" />
+    <None Remove="HabboHotel\Items\**" />
+    <None Remove="HabboHotel\Moderation\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Update="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Transactions" />
     <Reference Update="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -54,8 +60,6 @@
     <Content Include="Debug\Message_Response.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="HabboHotel\Items\" />
-    <Folder Include="HabboHotel\Moderation\" />
     <Folder Include="Specialized\Collections\" />
   </ItemGroup>
   <ItemGroup>
@@ -81,8 +85,5 @@
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.410601">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Security\RC4\HabboHexRC4_nonstatic.cs" />
   </ItemGroup>
 </Project>

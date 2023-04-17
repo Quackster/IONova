@@ -18,6 +18,7 @@ namespace Ion.HabboHotel.Habbos
         {
             // Prefer active client over Database
             GameClient client = IonEnvironment.GetHabboHotel().GetClients().GetClientOfHabbo(ID);
+
             if (client != null)
             {
                 return client.GetHabbo();
@@ -25,10 +26,13 @@ namespace Ion.HabboHotel.Habbos
             else
             {
                 Habbo habbo = new Habbo();
+
+                /*
                 if (habbo.LoadByID(IonEnvironment.GetDatabase(), ID))
                 {
                     return habbo;
                 }
+                */
             }
 
             return null;
@@ -38,18 +42,21 @@ namespace Ion.HabboHotel.Habbos
             // TODO: some sort of cache?
 
             Habbo habbo = new Habbo();
+
+            /*
             if (habbo.LoadByUsername(IonEnvironment.GetDatabase(), sUsername))
             {
                 return habbo;
-            }
+            }*/
 
             return null;
         }
 
         public bool UpdateHabbo(Habbo habbo)
         {
-            return IonEnvironment.GetDatabase().UPDATE(habbo);
+            return true;
         }
+
         #endregion
     }
 }

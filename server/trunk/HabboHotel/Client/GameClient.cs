@@ -4,7 +4,6 @@ using Ion.Net.Messages;
 using Ion.Specialized.Encoding;
 
 using Ion.HabboHotel.Habbos;
-using Ion.HabboHotel.Messenger;
 
 namespace Ion.HabboHotel.Client
 {
@@ -19,9 +18,6 @@ namespace Ion.HabboHotel.Client
         private ClientMessageHandler mMessageHandler;
         private Habbo mHabbo;
         private bool mPonged;
-
-        // Components
-        private MessengerComponent mMessenger;
         #endregion
 
         #region Properties
@@ -80,13 +76,6 @@ namespace Ion.HabboHotel.Client
         public Habbo GetHabbo()
         {
             return mHabbo;
-        }
-        /// <summary>
-        /// Returns the MessengerComponent instance of this client.
-        /// </summary>
-        public MessengerComponent GetMessenger()
-        {
-            return mMessenger;
         }
 
         /// <summary>
@@ -200,10 +189,6 @@ namespace Ion.HabboHotel.Client
             {
                 SendClientError(exLogin.Message);
             }
-            catch (ModerationBanException exBan)
-            {
-                SendBanMessage(exBan.Message);
-            }
         }
 
         private void CompleteLogin()
@@ -213,10 +198,6 @@ namespace Ion.HabboHotel.Client
             {
                 // Send user rights
                 mMessageHandler.GetResponse().Initialize(ResponseOpcodes.UserRights); // "@B"
-                foreach (string sRight in IonEnvironment.GetHabboHotel().GetUserRights().GetRights(mHabbo.Role))
-                {
-                    mMessageHandler.GetResponse().AppendString(sRight);
-                }
                 mMessageHandler.SendResponse();
 
                 // Login OK!
@@ -231,31 +212,6 @@ namespace Ion.HabboHotel.Client
             }
         }
         
-        /// <summary>
-        /// Tries to login this client on a Habbo account with a given username and password.
-        /// </summary>
-        /// <param name="sUsername">The username of the Habbo to attempt to login on.</param>
-        /// <param name="sPassword">The login password of the Habbo username. Case sensitive.</param>
-        public void Login(string sUsername, string sPassword)
-        {
-            try
-            {
-                // Try to login
-                mHabbo = IonEnvironment.GetHabboHotel().GetAuthenticator().Login(sUsername, sPassword);
-                
-                // Authenticator has forced unique login now
-                this.CompleteLogin();
-            }
-            catch (IncorrectLoginException exLogin)
-            {
-                SendClientError(exLogin.Message);
-            }
-            catch (ModerationBanException exBan)
-            {
-                SendBanMessage(exBan.Message);
-            }
-        }
-
         /// <summary>
         /// Attempts to save the Habbo DataObject of this session to the Database.
         /// </summary>
@@ -320,18 +276,6 @@ namespace Ion.HabboHotel.Client
             message.AppendString(sText);
 
             GetConnection().SendMessage(message);
-        }
-
-        /// <summary>
-        /// Initializes the MessengerComponent for this client.
-        /// </summary>
-        public bool InitializeMessenger()
-        {
-            mMessenger = new MessengerComponent(this);
-            mMessenger.ReloadBuddies();
-
-            // Ohwell
-            return true;
         }
 
         /// <summary>

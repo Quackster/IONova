@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Ion.HabboHotel.Catalog;
+﻿using System.Collections.Generic;
 
 namespace Ion.HabboHotel.Client
 {
@@ -14,19 +11,6 @@ namespace Ion.HabboHotel.Client
         {
             Response.Initialize(ResponseOpcodes.CatalogIndex);
 
-            // Add all visible pages to the index response
-            List<CatalogPage> pages = IonEnvironment.GetHabboHotel().GetCatalog().GetPages();
-            foreach (CatalogPage page in pages)
-            {
-                Response.AppendBoolean(page.Visible);
-                Response.AppendInt32((int)page.IconColor);
-                Response.AppendInt32((int)page.IconImage);
-                Response.AppendUInt32(page.ID);
-                Response.AppendString(page.Name);
-                Response.AppendBoolean(page.ComingSoon);
-                Response.AppendUInt32(page.TreeID);
-            }
-
             SendResponse();
         }
 
@@ -36,20 +20,6 @@ namespace Ion.HabboHotel.Client
         private void GetCatalogPage()
         {
             uint pageID = Request.PopWireduint();
-
-            Response.Initialize(ResponseOpcodes.CatalogPage);
-            CatalogPage page = IonEnvironment.GetHabboHotel().GetCatalog().GetPage(pageID);
-            if (page != null)
-            {
-                Response.AppendObject(page);
-
-                List<CatalogProduct> products = IonEnvironment.GetHabboHotel().GetCatalog().GetProducts(pageID);
-                foreach (CatalogProduct product in products)
-                {
-                    Response.AppendObject(product);
-                }
-            }
-            SendResponse();
         }
 
         /// <summary>

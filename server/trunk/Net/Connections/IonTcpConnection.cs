@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Net.Sockets;
-
-using Ion.Security.RC4;
 using Ion.Specialized.Utilities;
 
 using Ion.Net.Messages;
-
-using Ion.HabboHotel.Client;
 
 namespace Ion.Net.Connections
 {
@@ -53,11 +49,6 @@ namespace Ion.Net.Connections
         /// </summary>
         private RouteReceivedDataCallback mRouteReceivedDataCallback;
 
-        private bool mEncryptionStarted;
-        /// <summary>
-        /// The HabboHexRC4 instance providing the deciphering of enciphered client messages.
-        /// </summary>
-        private HabboHexRC4 mRc4;
         #endregion
 
         #region Members
@@ -153,7 +144,6 @@ namespace Ion.Net.Connections
             mSocket = null;
             mDataBuffer = null;
             mDataReceivedCallback = null;
-            mRc4 = null;
         }
         public bool TestConnection()
         {
@@ -203,12 +193,6 @@ namespace Ion.Net.Connections
             IonEnvironment.GetLog().WriteLine(" [" + mID + "] <-- " + message.Header + message.GetContentString());
 
             SendData(message.GetBytes());
-        }
-
-        public void SetEncryption(string sPublicKey)
-        {
-            mRc4 = new HabboHexRC4(sPublicKey);
-            mEncryptionStarted = true;
         }
 
         /// <summary>
@@ -270,12 +254,6 @@ namespace Ion.Net.Connections
             {
                 // Copy received data buffer
                 byte[] dataToProcess = ByteUtility.ChompBytes(mDataBuffer, 0, numReceivedBytes);
-
-                // Decipher received data?
-                if (mEncryptionStarted)
-                {
-                    dataToProcess = mRc4.Decipher(dataToProcess, numReceivedBytes);
-                }
 
                 // Route data to GameClient to parse and process messages
                 RouteData(ref dataToProcess);

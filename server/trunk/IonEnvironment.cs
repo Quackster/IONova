@@ -62,21 +62,16 @@ namespace Ion
                 }
 
                 // Initialize database and test a connection by getting & releasing it
-                DatabaseServer pDatabaseServer = new DatabaseServer(
+                mDatabaseManager = new DatabaseManager(
                     IonEnvironment.Configuration["db1.server.host"],
                     IonEnvironment.Configuration.TryParseUInt32("db1.server.port"),
                     IonEnvironment.Configuration["db1.server.uid"],
-                    IonEnvironment.Configuration["db1.server.pwd"]);
-
-                Database pDatabase = new Database(
+                    IonEnvironment.Configuration["db1.server.pwd"],
                     IonEnvironment.Configuration["db1.name"],
                     IonEnvironment.Configuration.TryParseUInt32("db1.minpoolsize"),
                     IonEnvironment.Configuration.TryParseUInt32("db1.maxpoolsize"));
 
-                mDatabaseManager = new DatabaseManager(pDatabaseServer, pDatabase);
-                mDatabaseManager.SetClientAmount(2);
-                mDatabaseManager.ReleaseClient(mDatabaseManager.GetClient().Handle);
-                mDatabaseManager.StartMonitor();
+
 
                 // Initialize TCP listener
                 mTcconnectionManager = new IonTcpConnectionManager(
@@ -122,9 +117,6 @@ namespace Ion
             if (GetDatabase() != null)
             {
                 IonEnvironment.GetLog().WriteLine("Destroying database " + GetDatabase().ToString());
-                GetDatabase().StopMonitor();
-                GetDatabase().DestroyClients();
-                GetDatabase().DestroyManager();
             }
            
             IonEnvironment.GetLog().WriteLine("Press a key to exit.");

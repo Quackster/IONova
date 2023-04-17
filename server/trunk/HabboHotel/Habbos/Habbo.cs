@@ -10,7 +10,7 @@ namespace Ion.HabboHotel.Habbos
     /// <summary>
     /// Represents a service user's account and avatar in the account and holds the information about the account.
     /// </summary>
-    public class Habbo : IDataObject, ISerializableObject
+    public class Habbo : ISerializableObject
     {
         #region Fields
         // Account
@@ -159,118 +159,7 @@ namespace Ion.HabboHotel.Habbos
                       "directMail=0" + Convert.ToChar(13);
         }
 
-        #region Storage
-        private void CheckinUserParams(ref DatabaseClient dbClient)
-        {
-            dbClient.AddParamWithValue("@id", mID);
-            dbClient.AddParamWithValue("@username", mUsername);
-            dbClient.AddParamWithValue("@password", mPassword);
-            dbClient.AddParamWithValue("@role", mRole);
-            dbClient.AddParamWithValue("@signedup", mSignedUp);
 
-            dbClient.AddParamWithValue("@email", mEmail);
-            dbClient.AddParamWithValue("@dob", mDateOfBirth);
-
-            dbClient.AddParamWithValue("@motto", mMotto);
-            dbClient.AddParamWithValue("@figure", mFigure);
-            dbClient.AddParamWithValue("@gender", mGender);
-
-            dbClient.AddParamWithValue("@coins", mCoins);
-            dbClient.AddParamWithValue("@films", mFilms);
-            dbClient.AddParamWithValue("@gametickets", mGameTickets);
-            dbClient.AddParamWithValue("@activitypoints", mActivityPoints);
-        }
-        private bool CheckoutUserParams(ref DataRow dRow)
-        {
-            if (dRow == null)
-                return false;
-
-            mID = (uint)dRow["id"];
-            mUsername = (string)dRow["username"];
-            mPassword = (string)dRow["password"];
-            mRole = (byte)dRow["role"];
-            mSignedUp = (DateTime)dRow["signedup"];
-
-            mEmail = (string)dRow["email"];
-            mDateOfBirth = (string)dRow["dob"];
-
-            mMotto = (string)dRow["motto"];
-            mFigure = (string)dRow["figure"];
-            Gender = char.Parse(dRow["gender"].ToString());
-
-            mCoins = (uint)dRow["coins"];
-            mFilms = (uint)dRow["films"];
-            mGameTickets = (uint)dRow["gametickets"];
-            mActivityPoints = (uint)dRow["activitypoints"];
-
-            return true;
-        }
-        
-        public bool LoadByID(DatabaseManager database, uint ID)
-        {
-            DataRow result = null;
-            using (DatabaseClient dbClient = database.GetClient())
-            {
-                dbClient.AddParamWithValue("@id", ID);
-                result = dbClient.ReadDataRow("SELECT * FROM users WHERE id = @id LIMIT 1;");
-            }
-
-            return CheckoutUserParams(ref result);
-        }
-        public bool LoadByUsername(DatabaseManager database, string sUsername)
-        {
-            DataRow result = null;
-            using (DatabaseClient dbClient = database.GetClient())
-            {
-                dbClient.AddParamWithValue("@username", sUsername);
-                result = dbClient.ReadDataRow("SELECT * FROM users WHERE username = @username LIMIT 1;");
-            }
-
-            return CheckoutUserParams(ref result);
-        }
-
-        public bool LoadBySsoTicket(DatabaseManager database, string sTicket)
-        {
-            DataRow result = null;
-            using (DatabaseClient dbClient = database.GetClient())
-            {
-                dbClient.AddParamWithValue("@ticket", sTicket);
-                result = dbClient.ReadDataRow("SELECT * FROM users WHERE ssoticket = @ticket;");
-                if (result != null)
-                {
-                    //dbClient.ExecuteQuery("UPDATE users SET ssoticket = NULL WHERE ssoticket = @ticket LIMIT 1;");
-                }
-            }
-
-            return CheckoutUserParams(ref result);
-        }
-
-        public bool INSERT(DatabaseClient dbClient)
-        {
-            CheckinUserParams(ref dbClient);
-            dbClient.ExecuteQuery("INSERT INTO users" +
-                "(username,password,role,signedup,email,dob,motto,figure,gender,coins,films,gametickets,activitypoints) " +
-                "VALUES(@username,@password,@role,@signedup,@email,@dob,@motto,@figure,@gender,@coins,@films,@gametickets,@activitypoints);");
-
-            return true;
-        }
-        public bool DELETE(DatabaseClient dbClient)
-        {
-            dbClient.AddParamWithValue("@id", mID);
-            dbClient.ExecuteQuery("DELETE FROM users WHERE id = @id;");
-
-            return true;
-        }
-        public bool UPDATE(DatabaseClient dbClient)
-        {
-            CheckinUserParams(ref dbClient);
-            dbClient.ExecuteQuery("UPDATE users " +
-                "SET username=@username,password=@password,role=@role,signedup=@signedup,email=@email,dob=@dob,motto=@motto,figure=@figure,gender=@gender,coins=@coins,films=@films,gametickets=@gametickets,activitypoints=@activitypoints " +
-                "WHERE id = @id;");
-
-            return true;
-        }
-        #endregion
         #endregion
     }
 }

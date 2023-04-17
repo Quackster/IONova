@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Ion.HabboHotel.Client.Utilities;
-using Ion.HabboHotel.Messenger;
-
-namespace Ion.HabboHotel.Client
+﻿namespace Ion.HabboHotel.Client
 {
     public partial class ClientMessageHandler
     {
@@ -42,6 +36,7 @@ namespace Ion.HabboHotel.Client
         /// </summary>
         private void MessengerInit()
         {
+            /*
             if (mSession.InitializeMessenger())
             {
                 // Register handlers
@@ -62,6 +57,7 @@ namespace Ion.HabboHotel.Client
 
                 SendResponse();
             }
+            */
         }
         /// <summary>
         /// 26 - "@Z"
@@ -103,17 +99,7 @@ namespace Ion.HabboHotel.Client
         /// </summary>
         private void GetAchievements()
         {
-            // Get achievements from Database
-            List<string> achievements = IonEnvironment.GetHabboHotel().GetAchievements().GetAchievements(mSession.GetHabbo().ID);
 
-            // Build response
-            Response.Initialize(ResponseOpcodes.Achievements); // "Ce"
-            Response.AppendInt32(achievements.Count);
-            foreach (string achievement in achievements)
-            {
-                Response.AppendString(achievement);
-            }
-            SendResponse();
         }
 
         /// <summary>

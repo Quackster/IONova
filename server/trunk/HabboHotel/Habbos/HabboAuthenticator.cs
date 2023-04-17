@@ -14,6 +14,7 @@ namespace Ion.HabboHotel.Habbos
         #region Methods
         public Habbo Login(string sUsername, string sPassword)
         {
+            /*
             // Do not use HabboManager.GetHabbo(string) here, as caching is planned to be implemented there
             Habbo habbo = new Habbo();
             if (habbo.LoadByUsername(IonEnvironment.GetDatabase(), sUsername) == false)
@@ -25,10 +26,16 @@ namespace Ion.HabboHotel.Habbos
             // Drop old client (if logged in via other connection)
             IonEnvironment.GetHabboHotel().GetClients().KillClientOfHabbo(habbo.ID);
 
-            return habbo;
+            return habbo;*/
+
+            return null;
         }
         public Habbo Login(string sTicket)
         {
+            Habbo habbo = new Habbo();
+            return habbo;
+
+            /*
             // Do not use HabboManager.GetHabbo(string) here, as caching is planned to be implemented there
             Habbo habbo = new Habbo();
             if (!habbo.LoadBySsoTicket(IonEnvironment.GetDatabase(), sTicket))
@@ -41,7 +48,8 @@ namespace Ion.HabboHotel.Habbos
                 IonEnvironment.GetHabboHotel().GetClients().KillClientOfHabbo(habbo.ID);
 
                 return habbo;
-            }
+            }*/
+            return null;
         }
         #endregion
     }

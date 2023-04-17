@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Ion.Net.Messages;
-using Ion.HabboHotel.Messenger;
-
-namespace Ion.HabboHotel.Client
+﻿namespace Ion.HabboHotel.Client
 {
     public partial class ClientMessageHandler
     {
@@ -24,6 +18,7 @@ namespace Ion.HabboHotel.Client
             uint buddyID = Request.PopWireduint();
             string sText = Request.PopFixedString();
 
+            /*
             // Buddy in list?
             if (mSession.GetMessenger().GetBuddy(buddyID) != null)
             {
@@ -43,7 +38,7 @@ namespace Ion.HabboHotel.Client
                     notify.AppendString(sText);
                     buddyClient.GetConnection().SendMessage(notify);
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -51,6 +46,7 @@ namespace Ion.HabboHotel.Client
         /// </summary>
         private void SendRoomInvite()
         {
+            /*
             // TODO: check if this session is in room
 
             // Determine how many receivers
@@ -83,6 +79,7 @@ namespace Ion.HabboHotel.Client
             {
                 receiver.GetConnection().SendMessage(notify);
             }
+            */
         }
 
         /// <summary>
@@ -122,6 +119,7 @@ namespace Ion.HabboHotel.Client
         /// </summary>
         private void RemoveBuddy()
         {
+            /*
             uint amount = Request.PopUInt32();
             for (int i = 0; i < amount; i++)
             {
@@ -130,7 +128,7 @@ namespace Ion.HabboHotel.Client
                 {
 
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -138,6 +136,7 @@ namespace Ion.HabboHotel.Client
         /// </summary>
         private void HabboSearch()
         {
+            /*
             GetCatalogIndex();
             return;
 
@@ -155,7 +154,7 @@ namespace Ion.HabboHotel.Client
             {
                 //...
             }
-            SendResponse();
+            SendResponse();*/
         }
 
         /// <summary>
