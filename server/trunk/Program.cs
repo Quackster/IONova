@@ -6,7 +6,7 @@ namespace Ion
     {
         public static void Main(string[] args)
         {
-            Console.Title = "Ion: Habbo Hotel server emulation environment";
+            Console.Title = "IONova: Habbo Hotel server emulation environment";
             Console.Beep();
 
             IonEnvironment.Initialize();

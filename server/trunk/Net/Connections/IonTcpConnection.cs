@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
-using System.Net.Sockets;
 using Ion.Specialized.Utilities;
 
 using Ion.Net.Messages;
+using DotNetty.Transport.Channels;
+using System.Threading.Tasks;
 
 namespace Ion.Net.Connections
 {
@@ -13,10 +14,6 @@ namespace Ion.Net.Connections
     public class IonTcpConnection
     {
         #region Fields
-        /// <summary>
-        /// The buffer size for receiving data.
-        /// </summary>
-        private const int RECEIVEDATA_BUFFER_SIZE = 512;
         /// <summary>
         /// The amount of milliseconds to sleep when receiving data before processing the message. When this constant is 0, the data will be processed immediately.
         /// </summary>
@@ -34,12 +31,8 @@ namespace Ion.Net.Connections
         /// <summary>
         /// The System.Net.Sockets.Socket object providing the connection between client and server.
         /// </summary>
-        private Socket mSocket = null;
+        private IChannel mSocket = null;
 
-        /// <summary>
-        /// The byte array holding the buffer for receiving data from client.
-        /// </summary>
-        private byte[] mDataBuffer = null;
         /// <summary>
         /// The AsyncCallback instance for the thread for receiving data asynchronously.
         /// </summary>
@@ -52,7 +45,7 @@ namespace Ion.Net.Connections
         #endregion
 
         #region Members
-        public delegate void RouteReceivedDataCallback(ref byte[] Data);
+        public delegate void RouteReceivedDataCallback(ClientMessage message);
         #endregion
 
         #region Properties
@@ -94,7 +87,7 @@ namespace Ion.Net.Connections
                 if (mSocket == null)
                     return "";
 
-                return mSocket.RemoteEndPoint.ToString().Split(':')[0];
+                return mSocket.RemoteAddress.ToString().Split(':')[0];
             }
         }
         /// <summary>
@@ -112,7 +105,7 @@ namespace Ion.Net.Connections
         /// </summary>
         /// <param name="ID">The unique ID used to identify this connection in the environment.</param>
         /// <param name="pSocket">The System.Net.Sockets.Socket of the new connection.</param>
-        public IonTcpConnection(uint ID, Socket pSocket)
+        public IonTcpConnection(uint ID, IChannel pSocket)
         {
             mID = ID;
             mSocket = pSocket;
@@ -126,12 +119,9 @@ namespace Ion.Net.Connections
         /// </summary>
         public void Start(RouteReceivedDataCallback dataRouter)
         {
-            mDataBuffer = new byte[RECEIVEDATA_BUFFER_SIZE];
-            mDataReceivedCallback = new AsyncCallback(DataReceived);
             mRouteReceivedDataCallback = dataRouter;
-
-            WaitForData();
         }
+
         /// <summary>
         /// Stops the connection, disconnects the socket and disposes used resources.
         /// </summary>
@@ -140,18 +130,18 @@ namespace Ion.Net.Connections
             if (!this.Alive)
                 return; // Already stopped
 
-            mSocket.Close();
+            mSocket.CloseAsync();
+
             mSocket = null;
-            mDataBuffer = null;
             mDataReceivedCallback = null;
         }
         public bool TestConnection()
         {
             try
             {
-                return mSocket.Send(new byte[] { 0 }) > 0;
+                mSocket.WriteAndFlushAsync(new byte[] { 0 });
                 //mSocket.Send(new byte[] { 0 });
-                //return true;
+                return true;
             }
             catch { }
 
@@ -162,17 +152,13 @@ namespace Ion.Net.Connections
             IonEnvironment.GetHabboHotel().GetClients().StopClient(mID);
         }
 
-        public void SendData(byte[] Data)
+        public async Task SendData(byte[] Data)
         {
             if (this.Alive)
             {
                 try
                 {
-                    mSocket.Send(Data);
-                }
-                catch (SocketException)
-                {
-                    ConnectionDead();
+                    await mSocket.WriteAndFlushAsync(Data);
                 }
                 catch (ObjectDisposedException)
                 {
@@ -184,95 +170,26 @@ namespace Ion.Net.Connections
                 }
             }
         }
-        public void SendData(string sData)
+        public async Task SendData(string sData)
         {
-            SendData(IonEnvironment.GetDefaultTextEncoding().GetBytes(sData));
+            await SendData(IonEnvironment.GetDefaultTextEncoding().GetBytes(sData));
         }
-        public void SendMessage(ServerMessage message)
+        public async Task SendMessage(ServerMessage message)
         {
             IonEnvironment.GetLog().WriteLine(" [" + mID + "] <-- " + message.Header + message.GetContentString());
 
-            SendData(message.GetBytes());
-        }
-
-        /// <summary>
-        /// Starts the asynchronous wait for new data.
-        /// </summary>
-        private void WaitForData()
-        {
-            if (this.Alive)
-            {
-                try
-                {
-                    mSocket.BeginReceive(mDataBuffer, 0, RECEIVEDATA_BUFFER_SIZE, SocketFlags.None, mDataReceivedCallback, null);
-                }
-                catch (SocketException)
-                {
-                    ConnectionDead();
-                }
-                catch (ObjectDisposedException)
-                {
-                    ConnectionDead();
-                }
-                catch (Exception ex)
-                {
-                    IonEnvironment.GetLog().WriteUnhandledExceptionError("IonTcpConnection.WaitForData", ex);
-                    ConnectionDead();
-                }
-            }
-        }
-        private void DataReceived(IAsyncResult iAr)
-        {
-            // Connection not stopped yet?
-            if (this.Alive == false)
-                return;
-
-            // Do an optional wait before processing the data
-            if (RECEIVEDATA_MILLISECONDS_DELAY > 0)
-                Thread.Sleep(RECEIVEDATA_MILLISECONDS_DELAY);
-
-            // How many bytes has server received?
-            int numReceivedBytes = 0;
-            try
-            {
-                numReceivedBytes = mSocket.EndReceive(iAr);
-            }
-            catch (ObjectDisposedException)
-            {
-                ConnectionDead();
-                return;
-            }
-            catch (Exception ex)
-            {
-                IonEnvironment.GetLog().WriteUnhandledExceptionError("IonTcpConnection.DataReceived", ex);
-                
-                ConnectionDead();
-                return;
-            }
-
-            if (numReceivedBytes > 0)
-            {
-                // Copy received data buffer
-                byte[] dataToProcess = ByteUtility.ChompBytes(mDataBuffer, 0, numReceivedBytes);
-
-                // Route data to GameClient to parse and process messages
-                RouteData(ref dataToProcess);
-                //Environment.GetHabboHotel().GetClients().GetClient(this.ID).HandleConnectionData(ref dataToProcess);
-            }
-
-            // Wait for new data
-            WaitForData();
+            await SendData(message.GetBytes());
         }
 
         /// <summary>
         /// Routes a byte array passed as reference to another object.
         /// </summary>
         /// <param name="Data">The byte array to route.</param>
-        private void RouteData(ref byte[] Data)
+        public void RouteData(ClientMessage message)
         {
             if (mRouteReceivedDataCallback != null)
             {
-                mRouteReceivedDataCallback.Invoke(ref Data);
+                mRouteReceivedDataCallback.Invoke(message);
             }
         }
         #endregion

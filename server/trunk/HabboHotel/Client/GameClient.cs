@@ -116,62 +116,21 @@ namespace Ion.HabboHotel.Client
         /// </summary>
         /// <param name="Data">The byte array with the data to process.</param>
         /// <param name="numBytesToProcess">The actual amount of bytes in the byte array to process.</param>
-        public void HandleConnectionData(ref byte[] data)
+        public void HandleConnectionData(ClientMessage message)
         {
-            // Gameclient protocol or policyrequest?
-            if (data[0] != 64)
+            try
             {
-                IonEnvironment.GetLog().WriteInformation("Client " + mID + " sent non-gameclient message: " + IonEnvironment.GetDefaultTextEncoding().GetString(data));
 
-                string xmlPolicy =
-                                   "<?xml version=\"1.0\"?>\r\n" +
-                                   "<!DOCTYPE cross-domain-policy SYSTEM \"/xml/dtds/cross-domain-policy.dtd\">\r\n" +
-                                   "<cross-domain-policy>\r\n" +
-                                   "<allow-access-from domain=\"*\" to-ports=\"1-31111\" />\r\n" +
-                                   "</cross-domain-policy>\x0";
-
-                IonEnvironment.GetLog().WriteInformation("Client " + mID + ": sending XML cross domain policy file: " + xmlPolicy);
-                mConnection.SendData(xmlPolicy);
-
-                mMessageHandler.GetResponse().Initialize(ResponseOpcodes.SecretKey); // "@A"
-                mMessageHandler.GetResponse().Append("ION/Deltar");
-                mMessageHandler.SendResponse();
+                // Handle message object
+                mMessageHandler.HandleRequest(message);
             }
-            else
+            catch (IndexOutOfRangeException) // Bad formatting!
             {
-                int pos = 0;
-                while (pos < data.Length)
-                {
-                    try
-                    {
-                        // Total length of message (without this): 3 Base64 bytes
-                        int messageLength = Base64Encoding.DecodeInt32(new byte[] { data[pos++], data[pos++], data[pos++] });
-
-                        // ID of message: 2 Base64 bytes
-                        uint messageID = Base64Encoding.DecodeUInt32(new byte[] { data[pos++], data[pos++] });
-
-                        // Data of message: (messageLength - 2) bytes
-                        byte[] Content = new byte[messageLength - 2];
-                        for (int i = 0; i < Content.Length; i++)
-                        {
-                            Content[i] = data[pos++];
-                        }
-
-                        // Create message object
-                        ClientMessage message = new ClientMessage(messageID, Content);
-
-                        // Handle message object
-                        mMessageHandler.HandleRequest(message);
-                    }
-                    catch (IndexOutOfRangeException) // Bad formatting!
-                    {
-                        IonEnvironment.GetHabboHotel().GetClients().StopClient(mID);
-                    }
-                    catch (Exception ex)
-                    {
-                        IonEnvironment.GetLog().WriteUnhandledExceptionError("GameClient.HandleConnectionData", ex);
-                    }
-                }
+                IonEnvironment.GetHabboHotel().GetClients().StopClient(mID);
+            }
+            catch (Exception ex)
+            {
+                IonEnvironment.GetLog().WriteUnhandledExceptionError("GameClient.HandleConnectionData", ex);
             }
         }
 
@@ -181,6 +140,8 @@ namespace Ion.HabboHotel.Client
             {
                 // Try to login
                 mHabbo = IonEnvironment.GetHabboHotel().GetAuthenticator().Login(sTicket);
+                mHabbo.Motto = "Test";
+                mHabbo.Username = "Test";
 
                 // Authenticator has forced unique login now
                 this.CompleteLogin();
@@ -202,6 +163,11 @@ namespace Ion.HabboHotel.Client
 
                 // Login OK!
                 mMessageHandler.GetResponse().Initialize(3); // "@C"
+                mMessageHandler.SendResponse();
+
+                // Login OK!
+                mMessageHandler.GetResponse().Initialize(161); // "@C"
+                mMessageHandler.GetResponse().AppendString("Hello, welcome to IONova!", (byte) 2);
                 mMessageHandler.SendResponse();
 
                 // Register handlers

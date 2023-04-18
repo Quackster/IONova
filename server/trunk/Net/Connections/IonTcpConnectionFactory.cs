@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DotNetty.Transport.Channels;
+using System;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Ion.Net.Connections
 {
@@ -31,12 +33,12 @@ namespace Ion.Net.Connections
         /// </summary>
         /// <param name="pSocket">The System.Net.Socket.Sockets object to base the connection on.</param>
         /// <returns>IonTcpConnection</returns>
-        public IonTcpConnection CreateConnection(Socket pSocket)
+        public IonTcpConnection CreateConnection(IChannel pSocket)
         {
             if (pSocket == null)
                 return null;
-
-            IonTcpConnection connection = new IonTcpConnection(++mConnectionCounter, pSocket);
+            
+            IonTcpConnection connection = new IonTcpConnection(Interlocked.Increment(ref mConnectionCounter), pSocket);
             IonEnvironment.GetLog().WriteInformation(string.Format("Created IonTcpConnection [{0}] for {1}.", connection.ID, connection.ipAddress));
             
             return connection;

@@ -19,7 +19,7 @@ namespace Ion.Net.Connections
         /// A System.Collections.Generic.Dictionary with client IDs as keys and IonTcpConnections as values. This collection holds active IonTcpConnections.
         /// </summary>
         private Dictionary<uint, IonTcpConnection> mConnections;
-        private IonTcpConnectionListener mListener;
+        private IonTcpConnectionListener1 mListener;
         #endregion
 
         #region Constructors
@@ -38,7 +38,7 @@ namespace Ion.Net.Connections
             mConnections = new Dictionary<uint, IonTcpConnection>(initialCapacity);
             mMaxSimultaneousConnections = maxSimultaneousConnections;
 
-            mListener = new IonTcpConnectionListener(sLocalIP, Port, this);
+            mListener = new IonTcpConnectionListener1(sLocalIP, Port, this);
         }
         #endregion
 
@@ -73,7 +73,7 @@ namespace Ion.Net.Connections
         /// <summary>
         /// Returns the IonTcpConnection listener instance.
         /// </summary>
-        public IonTcpConnectionListener GetListener()
+        public IonTcpConnectionListener1 GetListener()
         {
             return mListener;
         }
