@@ -25,7 +25,7 @@
             if (mSession.GetHabbo() != null)
             {
                 Response.Initialize(ResponseOpcodes.CreditBalance); // "@F"
-                Response.Append(mSession.GetHabbo().Coins);
+                Response.Append(mSession.GetHabbo().Credits);
                 Response.Append(".0");
 
                 SendResponse();

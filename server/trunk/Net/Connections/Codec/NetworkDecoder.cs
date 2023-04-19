@@ -50,10 +50,10 @@ namespace Ion.Net.Connections.Codec
                     return;
                 }
 
-                var message = new byte[length];
-                buffer.ReadBytes(message, 0, message.Length);
+                var messageHeader = Base64Encoding.DecodeUInt32(new byte[] { buffer.ReadByte(), buffer.ReadByte() });
+                var message = new byte[length - 2];
 
-                var messageHeader = Base64Encoding.DecodeUInt32(new byte[] { message[0], message[1] });
+                buffer.ReadBytes(message, 0, message.Length);
                 output.Add(new ClientMessage(messageHeader, message));
             }
         }

@@ -143,7 +143,7 @@ namespace Ion.HabboHotel.Client
             {
                 foreach (GameClient client in mClients.Values)
                 {
-                    if (client.GetHabbo() != null && client.GetHabbo().ID == accountID)
+                    if (client.GetHabbo() != null && client.GetHabbo().Id == accountID)
                     {
                         return client;
                     }

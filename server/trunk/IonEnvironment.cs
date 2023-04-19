@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Configuration;
 
 using Ion.Core;
 using Ion.Storage;
@@ -71,7 +70,17 @@ namespace Ion
                     IonEnvironment.Configuration.TryParseUInt32("db1.minpoolsize"),
                     IonEnvironment.Configuration.TryParseUInt32("db1.maxpoolsize"));
 
-
+                using (var context = mDatabaseManager.GetContext())
+                {
+                    try
+                    {
+                        context.Database.EnsureCreated();
+                    }
+                    catch (Exception mex)
+                    {
+                        throw new DatabaseException("Failed to open connection for database client, exception message: " + mex.Message);
+                    }
+                }
 
                 // Initialize TCP listener
                 mTcconnectionManager = new IonTcpConnectionManager(

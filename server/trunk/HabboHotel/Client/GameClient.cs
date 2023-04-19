@@ -4,6 +4,7 @@ using Ion.Net.Messages;
 using Ion.Specialized.Encoding;
 
 using Ion.HabboHotel.Habbos;
+using Deltar.Storage.Models.Habbo;
 
 namespace Ion.HabboHotel.Client
 {
@@ -140,8 +141,6 @@ namespace Ion.HabboHotel.Client
             {
                 // Try to login
                 mHabbo = IonEnvironment.GetHabboHotel().GetAuthenticator().Login(sTicket);
-                mHabbo.Motto = "Test";
-                mHabbo.Username = "Test";
 
                 // Authenticator has forced unique login now
                 this.CompleteLogin();
@@ -198,7 +197,7 @@ namespace Ion.HabboHotel.Client
         {
             if (mHabbo != null)
             {
-                Habbo newObject = IonEnvironment.GetHabboHotel().GetHabbos().GetHabbo(mHabbo.ID);
+                Habbo newObject = IonEnvironment.GetHabboHotel().GetHabbos().GetHabbo(mHabbo.Id);
                 if (newObject != null)
                 {
                     mHabbo = newObject;

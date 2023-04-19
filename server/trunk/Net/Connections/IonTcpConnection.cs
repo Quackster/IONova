@@ -34,10 +34,6 @@ namespace Ion.Net.Connections
         private IChannel mSocket = null;
 
         /// <summary>
-        /// The AsyncCallback instance for the thread for receiving data asynchronously.
-        /// </summary>
-        private AsyncCallback mDataReceivedCallback;
-        /// <summary>
         /// The RouteReceivedDataCallback to route received data to another object.
         /// </summary>
         private RouteReceivedDataCallback mRouteReceivedDataCallback;
@@ -133,7 +129,6 @@ namespace Ion.Net.Connections
             mSocket.CloseAsync();
 
             mSocket = null;
-            mDataReceivedCallback = null;
         }
         public bool TestConnection()
         {
