@@ -4,7 +4,8 @@ using Ion.Net.Messages;
 using Ion.Specialized.Encoding;
 
 using Ion.HabboHotel.Habbos;
-using Deltar.Storage.Models.Habbo;
+using Ion.Storage.Models;
+using Ion.HabboHotel.Messenger;
 
 namespace Ion.HabboHotel.Client
 {
@@ -19,6 +20,9 @@ namespace Ion.HabboHotel.Client
         private ClientMessageHandler mMessageHandler;
         private Habbo mHabbo;
         private bool mPonged;
+
+        // Components
+        private MessengerComponent mMessenger;
         #endregion
 
         #region Properties
@@ -77,6 +81,13 @@ namespace Ion.HabboHotel.Client
         public Habbo GetHabbo()
         {
             return mHabbo;
+        }
+        /// <summary>
+        /// Returns the MessengerComponent instance of this client.
+        /// </summary>
+        public MessengerComponent GetMessenger()
+        {
+            return mMessenger;
         }
 
         /// <summary>
@@ -241,6 +252,19 @@ namespace Ion.HabboHotel.Client
             message.AppendString(sText);
 
             GetConnection().SendMessage(message);
+        }
+
+
+        /// <summary>
+        /// Initializes the MessengerComponent for this client.
+        /// </summary>
+        public bool InitializeMessenger()
+        {
+            mMessenger = new MessengerComponent(this);
+            // mMessenger.ReloadBuddies();
+
+            // Ohwell
+            return true;
         }
 
         /// <summary>

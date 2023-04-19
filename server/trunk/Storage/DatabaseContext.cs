@@ -1,4 +1,4 @@
-﻿using Deltar.Storage.Models.Habbo;
+﻿using Ion.Storage.Models;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using System;
@@ -28,6 +28,10 @@ namespace Ion.Storage
 
         public DbSet<Habbo> Habbo { get; set; }
         public DbSet<SsoTicket> SsoTicket { get; set; }
+        public DbSet<MessengerFriend> MessengerFriend { get; set; }
+        public DbSet<MessengerRequest> MessengerRequest { get; set; }
+        public DbSet<MessengerCategory> MessengerCategory { get; set; }
+        public DbSet<MessengerChat> MessengerChat { get; set; }
 
         #endregion
 
@@ -96,6 +100,55 @@ namespace Ion.Storage
                 .HasOne(e => e.HabboData)
                 .WithMany(c => c.Tickets)
                 .HasForeignKey(x => x.UserId);
+
+
+            modelBuilder.Entity<MessengerFriend>(entity =>
+            {
+                entity.ToTable("messenger_friends");
+                entity.HasKey(x => new { x.UserId, x.FriendId });
+
+                entity.Property(x => x.UserId).HasColumnName("user_id");
+                entity.Property(x => x.FriendId).HasColumnName("friend_id");
+
+                entity.HasOne(e => e.FriendData)
+                    .WithMany(p => p.Friends)
+                    .HasForeignKey(x => x.FriendId);
+            });
+
+
+            modelBuilder.Entity<MessengerRequest>(entity =>
+            {
+                entity.ToTable("messenger_requests");
+                entity.HasKey(x => new { x.UserId, x.FriendId });
+
+                entity.Property(x => x.UserId).HasColumnName("user_id");
+                entity.Property(x => x.FriendId).HasColumnName("friend_id");
+
+                entity.HasOne(e => e.FriendData)
+                    .WithMany(p => p.Requests)
+                    .HasForeignKey(x => x.FriendId);
+            });
+
+            modelBuilder.Entity<MessengerCategory>(entity =>
+            {
+                entity.ToTable("messenger_categories");
+                entity.HasKey(x => new { x.UserId, x.Label });
+
+                entity.Property(x => x.UserId).HasColumnName("user_id");
+                entity.Property(x => x.Label).HasColumnName("label");
+            });
+
+            modelBuilder.Entity<MessengerChat>(entity =>
+            {
+                entity.ToTable("messenger_chat_history");
+                entity.HasKey(x => new { x.UserId, x.FriendId, x.Message });
+
+                entity.Property(x => x.UserId).HasColumnName("user_id");
+                entity.Property(x => x.FriendId).HasColumnName("friend_id");
+                entity.Property(x => x.Message).HasColumnName("message");
+                entity.Property(x => x.IsRead).HasColumnName("has_read").HasDefaultValue();
+                entity.Property(x => x.MessagedAt).HasColumnName("messaged_at").HasDefaultValue();
+            });
         }
 
         #endregion

@@ -5,7 +5,7 @@ using System.Data;
 using Ion.Storage;
 using Ion.Net.Messages;
 
-namespace Deltar.Storage.Models.Habbo
+namespace Ion.Storage.Models
 {
     /// <summary>
     /// Represents a service user's account and avatar in the account and holds the information about the account.

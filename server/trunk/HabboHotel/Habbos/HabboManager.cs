@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Deltar.Storage.Models.Habbo;
+using Ion.Storage.Models;
 using Ion.HabboHotel.Client;
 using Microsoft.EntityFrameworkCore;
 

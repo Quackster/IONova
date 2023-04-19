@@ -1,4 +1,6 @@
-﻿namespace Ion.HabboHotel.Client
+﻿using Ion.HabboHotel.Messenger;
+
+namespace Ion.HabboHotel.Client
 {
     public partial class ClientMessageHandler
     {
@@ -36,7 +38,6 @@
         /// </summary>
         private void MessengerInit()
         {
-            /*
             if (mSession.InitializeMessenger())
             {
                 // Register handlers
@@ -49,15 +50,14 @@
                 Response.AppendInt32(600);
                 Response.AppendBoolean(false);
 
-                Response.AppendInt32(mSession.GetMessenger().GetBuddies().Count);
-                foreach (MessengerBuddy buddy in mSession.GetMessenger().GetBuddies())
+                Response.AppendInt32(mSession.GetMessenger().Friends.Count);
+                foreach (MessengerBuddy buddy in mSession.GetMessenger().Friends)
                 {
                     Response.AppendObject(buddy);
                 }
 
                 SendResponse();
             }
-            */
         }
         /// <summary>
         /// 26 - "@Z"

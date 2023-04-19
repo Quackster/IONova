@@ -1,5 +1,6 @@
 ﻿using Ion.HabboHotel.Client;
 using Ion.HabboHotel.Habbos;
+using Ion.HabboHotel.Messenger;
 
 namespace Ion.HabboHotel
 {
@@ -15,6 +16,7 @@ namespace Ion.HabboHotel
         private GameClientManager mClientManager = null;
         private HabboManager mHabboManager = null;
         private HabboAuthenticator mAuthenticator = null;
+        private MessengerManager mMessengerManager = null;
 
         #endregion
 
@@ -40,6 +42,7 @@ namespace Ion.HabboHotel
             // Initialize HabboHotel project modules
             mClientManager = new GameClientManager();
             mHabboManager = new HabboManager();
+            mMessengerManager = new MessengerManager();
             mAuthenticator = new HabboAuthenticator();
 
             // Start connection checker for clients
@@ -76,6 +79,13 @@ namespace Ion.HabboHotel
         public HabboManager GetHabbos()
         {
             return mHabboManager;
+        }
+        /// <summary>
+        /// Returns the messenger manager
+        /// </summary>
+        public MessengerManager GetMessenger()
+        {
+            return mMessengerManager;
         }
         /// <summary>
         /// Returns the Habbo authenticator.

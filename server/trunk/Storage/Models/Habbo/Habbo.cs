@@ -6,7 +6,7 @@ using Ion.Storage;
 using Ion.Net.Messages;
 using System.Collections.Generic;
 
-namespace Deltar.Storage.Models.Habbo
+namespace Ion.Storage.Models
 {
     /// <summary>
     /// Represents a service user's account and avatar in the account and holds the information about the account.
@@ -24,6 +24,8 @@ namespace Deltar.Storage.Models.Habbo
         public virtual DateTime LastOnline { get; set; }
         public virtual string Motto { get; set; }
         public virtual List<SsoTicket> Tickets { get; set; }
+        public virtual List<MessengerFriend> Friends { get; set; }
+        public virtual List<MessengerRequest> Requests { get; set; }
 
         #region Methods
 

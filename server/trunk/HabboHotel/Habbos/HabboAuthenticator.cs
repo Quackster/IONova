@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Deltar.Storage.Models.Habbo;
+using Ion.Storage.Models;
 
 namespace Ion.HabboHotel.Habbos
 {
