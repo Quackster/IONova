@@ -11,22 +11,39 @@ namespace Ion.Storage
     /// </summary>
     public class DatabaseManager
     {
-        #region Fields
-
-
-        #endregion
-
         #region Properties
+
+        public string Server { get; set; }
+        public uint Port { get; set; }
+        public string User { get; set; }
+        public string Password { get; set; }
+        public string Database { get; set; }
+        public uint MinPoolSize { get; set; }
+        public uint MaxPoolSize { get; set; }
 
         #endregion
 
         #region Constructor
 
-        public DatabaseManager(string sServer, uint Port, string sUser, string sPassword, string sDatabase, uint minPoolSize, uint maxPoolSize)
+        public DatabaseManager(string server, uint port, string user, string password, string database, uint minPoolSize, uint maxPoolSize)
         {
-
+            Server = server;
+            Port = port;
+            User = user;
+            Password = password;
+            Database = database;
+            MinPoolSize = minPoolSize;
+            MaxPoolSize = maxPoolSize;
         }
 
+        #endregion
+
+        #region Methods
+
+        public DatabaseContext GetContext()
+        {
+            return new DatabaseContext(Server, Port, User, Password, Database, MinPoolSize, MaxPoolSize);
+        }
 
         #endregion
     }

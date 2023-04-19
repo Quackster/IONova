@@ -122,7 +122,6 @@ namespace Ion
             IonEnvironment.GetLog().WriteLine("Press a key to exit.");
 
             Console.ReadKey();
-            System.Environment.Exit(0);
         }
 
         /// <summary>
